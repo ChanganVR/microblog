@@ -1,11 +1,17 @@
 var express = require('express');
+var router = express.Router();
 var crypto = require('crypto');
 var User =require('../models/user')
-var router = express.Router();
+var Post = require('../models/post');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index');
+  if(res.user) {
+    res.render('index');
+  }else{
+    res.locals.posts=null;
+    res.render('user');
+  }
 });
 //TODO:{title:'index'}
 
@@ -53,7 +59,6 @@ router.post('/reg', function(req,res){
   })
   //check whether account exist
   User.get(newUser.name,function(err,user){
-    debugger;
     if(user)
       err = 'Username already exists';
     if(err){
@@ -61,7 +66,6 @@ router.post('/reg', function(req,res){
       return res.redirect('/reg');
     }
     newUser.save(function(err){
-      debugger;
       if(err){
         req.flash('error',error);
         return res.redirect('/reg');
@@ -81,7 +85,6 @@ router.get('/logout',function(req,res,next){
 })
 
 function checkLogin(req,res,next){
-  debugger;
   if(!req.session.user) {
     req.flash('error', 'not logged in');
     return res.redirect('/');
@@ -90,12 +93,44 @@ function checkLogin(req,res,next){
 }
 
 function checkNotLogin(req,res,next){
-  debugger;
   if(req.session.user){
-    req.flash('error', 'alread logged in');
+    req.flash('error', 'already logged in');
     return res.redirect('/');
   }
   next();
 }
+
+router.get('/u/:user', function(req, res, next){
+  User.get(req.params.user, function(err, user){
+    if(!user){
+      req.flash('error', "User doesn't exist");
+      return res.redirect('/');
+    }
+    Post.get(user.name, function(err, posts){
+      if(err){
+        req.flash('error',err);
+        return res.redirect('/');
+      }
+      res.render('user',{
+        title:user.name,
+        posts:posts
+      })
+    })
+  })
+})
+
+router.post('/post',checkLogin);
+router.post('/post',function(req,res,next){
+  var currentUser=req.session.user;
+  var post = new Post(currentUser.name, req.body.post);
+  post.save(function(err){
+    if(err){
+      req.flash('error', err);
+      return res.redirect('/');
+    }
+    req.flash('success', 'post success');
+    res.redirect('/u/'+currentUser.name);
+  })
+})
 
 module.exports = router;

@@ -31,16 +31,13 @@ User.prototype.save = function save(callback){
 
 User.get = function get(username, callback) {
   MongoClient.connect("mongodb://localhost/microblog", function(err, db) {
-    debugger;
     if(err) { return callback(err)}
     db.collection('users', function(err, collection){
-      debugger;
       if(err){
         db.close();
         return callback(err, null);
       }
       collection.find({name:username}).toArray(function(err, doc){
-        debugger;
         db.close();
         if(doc[0]){
           var user = new User(doc[0]);

@@ -1,0 +1,9 @@
+<% if(posts) {posts.forEach(function(post, index) { %>
+<div class="row" bgcolor="black">
+    <div style="width:200px; margin-left:auto; margin-right:auto">
+        <h3><a href="/u/<%= post.user %>"><%= post.user %></a> 发表</h3>
+        <p><small><%= post.time.toISOString().replace(/T/, ' ').replace(/\..+/, ' ') %></small></p>
+        <p><%= post.post %></p>
+    </div>
+</div><!-- end row -->
+<%})}%>
