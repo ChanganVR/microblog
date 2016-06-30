@@ -31,8 +31,16 @@ body {
                     <% } else { %>
                     <li><a href="/logout">登出</a></li>
                     <% } %>
+                    <li><a href="/hot">热门分享</a></li>
                 </ul>
             </div>
+            <% if(user){%>
+            <div>
+                <p class="navbar-text navbar-right">
+                    当前用户: <a href="/u/<%= user.name %>"><%= user.name %></a>
+                </p>
+            </div>
+            <%}%>
         </div>
     </div>
 </div>

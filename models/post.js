@@ -34,22 +34,22 @@ Post.prototype.save = function save(callback){
 }
 
 Post.get = function get(username, callback){
-    debugger;
     MongoClient.connect("mongodb://localhost/microblog", function(err, db) {
         if(err) { return callback(err)}
         db.collection('posts', function(err, collection){
             var query ={};
-            if(username){
+            if(username){//if username==null, then find all posts and list in the hot page
                 query.user= username;
             }
             collection.find(query).sort({time:-1}).toArray(function(err,docs){
+                debugger;
                 db.close();
                 if(err){
                     callback(err,null);
                 }
                 var posts=[];
                 docs.forEach(function(doc,index){
-                    var post = new Post(doc.user, doc.post, doc.time);
+                    var post = new Post(docs[index].user, docs[index].post, docs[index].time);
                     posts.push(post);
                 })
                 callback(null,posts);

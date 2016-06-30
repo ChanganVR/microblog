@@ -133,4 +133,17 @@ router.post('/post',function(req,res,next){
   })
 })
 
+router.get('/hot',function(req,res,next){
+  Post.get(null, function(err, posts){
+    debugger;
+    if(err) {
+      req.flash('error', err);
+      return res.redirect('/');
+    }
+    res.render('hot',{
+      posts:posts
+  })
+  })
+})
+
 module.exports = router;
